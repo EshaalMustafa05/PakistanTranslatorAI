@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistan Multilingual Translator</title>
+    
+
+<script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pakistan-green: #00664F;
+            --pakistan-white: #FFFFFF;
+            --light-green-bg: #e6f7f2;
+            --accent-teal: #0D9488;
+            --text-dark: #1f2937;
+            --text-light: #4b5563;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-green-bg); 
+        }
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #a7f3d0;
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #e0f2f7;
+        }
+
+        .spinner {
+            border-top-color: var(--pakistan-white);
+            border-right-color: transparent;
+            border-bottom-color: var(--pakistan-white);
+            border-left-color: transparent;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 min-h-screen flex items-center justify-center">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-xl p-6 md:p-10 border-t-8 border-[var(--pakistan-green)]">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-[var(--text-dark)] mb-2">
+                <span class="text-4xl inline-block mr-2 align-middle">🇵🇰</span> Pakistan Multilingual AI Translator
+            </h1>
+            <p class="text-lg font-medium text-[var(--pakistan-green)] leading-snug mt-3 mb-4">
+                "Echoing Unity: Discovering the Diverse Voices of Pakistan."
+            </p>
+            <p class="text-md text-[var(--text-light)]">Bridge linguistic gaps across the 72+ languages and dialects of Pakistan.</p>
+        </header>
+
+        
+
+<div class="mb-6 bg-gray-50 p-4 rounded-lg shadow-inner border border-gray-200">
+            <label for="input-text" class="block text-sm font-medium text-[var(--text-dark)] mb-2">
+                Input Text (English or Urdu Recommended):
+            </label>
+            <textarea id="input-text" rows="5" placeholder="Enter text to translate..."
+                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-[var(--pakistan-green)] focus:border-[var(--pakistan-green)] transition duration-150 ease-in-out resize-none shadow-sm text-base bg-white"></textarea>
+        </div>
+
+        
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div class="flex-grow">
+                <label for="target-language" class="block text-sm font-medium text-[var(--text-dark)] mb-2">
+                    Target Language:
+                </label>
+                <select id="target-language" onchange="handleLanguageChange()"
+                    class="w-full md:w-80 p-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:ring-[var(--pakistan-green)] focus:border-[var(--pakistan-green)] text-base">
+                    
+
+</select>
+            </div>
+            
+            <button id="translate-button"
+                class="w-full md:w-auto px-6 py-3 bg-[var(--pakistan-green)] text-white font-semibold rounded-lg shadow-md hover:bg-[#00503F] focus:outline-none focus:ring-2 focus:ring-[var(--pakistan-green)] focus:ring-offset-2 transition duration-150 ease-in-out flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                onclick="translateText()">
+                <span id="button-text">Translate</span>
+                <div id="spinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
+            </button>
+        </div>
+
+        
+
+<div>
+            <label for="output-text" class="block text-sm font-medium text-[var(--text-dark)] mb-2">
+                Translated Text:
+            </label>
+            
+            <!-- New Panel for Sign Language Context -->
+            <div id="sign-language-info" class="mb-4 p-4 rounded-lg bg-green-100 border-l-4 border-[var(--pakistan-green)] hidden">
+                <p class="font-semibold text-[var(--pakistan-green)] flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                    Pakistan Sign Language (PSL) Output
+                </p>
+                <p class="text-sm text-gray-700 mt-1">
+                    The translation below is a **textual description** of the required hand signs, movements, and expressions.
+                </p>
+            </div>
+            
+            <textarea id="output-text" rows="5" readonly placeholder="Translation will appear here..."
+                class="w-full p-4 border border-gray-300 bg-gray-50 rounded-lg resize-none text-base text-[var(--text-dark)]"></textarea>
+            
+            
+
+<div id="citations" class="mt-4 p-3 bg-green-50 border border-green-200 text-[var(--text-light)] rounded-lg text-sm hidden">
+                <p class="font-semibold mb-1 text-[var(--text-dark)]">AI Grounding Sources:</p>
+                <ul id="citation-list" class="list-disc list-inside space-y-1"></ul>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        const languages = [
+            "Urdu (اردو) - National",
+            "English - Official",
+            "Punjabi - Major Provincial",
+            "Pashto (Northern, Central, Southern) - Major Provincial",
+            "Sindhi (سنڌي) - Major Provincial",
+            "Saraiki (سرائیکی) - Major Provincial",
+            "Balochi (Makrani, Rakhshani, Sulaimani) - Major Provincial",
+            "Hindko (Northern & Southern) - Major Provincial",
+            "Brahui - Major Provincial",
+            "Balti", "Burushaski", "Shina", "Khowar", "Kashmiri", "Palula", "Wakhi", 
+            "Kalasha", "Torwali", "Chilisso", "Dameli", "Gawar-Bati", "Gawri", "Gowro", 
+            "Kalkoti", "Kamviri", "Kati", "Kohistani, Indus", "Shina, Kohistani", "Badeshi", 
+            "Domaaki", "Kyrgyz", "Mankiyali", "Ormuri", "Sarikoli", "Savi", "Ushojo", 
+            "Waziri", "Yadgha",
+            "Kacchi (Kutchi)", "Mewati", "Memoni", "Gujarati", "Marwari", "Dhatki", "Bagri", 
+            "Ghera", "Goaria", "Gurgula", "Haryanvi (Rangri)", "Jandavra", "Jogi", "Kabutra", 
+            "Koli, Kachi", "Koli, Parkari", "Koli, Wadiyari", "Loarki", "Oadki", "Sindhi Bhil", 
+            "Vaghri", "Aer", "Bhaya",
+            "Dehwari", "Hazaragi", "Jadgali", "Khetrani", "Lasi", "Waneci",
+            "Pakistan Sign Language (Text description only)", "Dari (Eastern Farsi)", 
+            "Pahari-Pothwari", "Kundal Shahi", "Gujari"
+        ].sort();
+
+        const SIGN_LANGUAGE_NAME = "Pakistan Sign Language (Text description only)";
+
+        const selectElement = document.getElementById('target-language');
+        
+        languages.forEach(lang => {
+            const option = document.createElement('option');
+            option.value = lang;
+            option.textContent = lang;
+            selectElement.appendChild(option);
+        });
+
+        selectElement.value = "Urdu (اردو) - National";
+
+        const inputTextarea = document.getElementById('input-text');
+        const outputTextarea = document.getElementById('output-text');
+        const translateButton = document.getElementById('translate-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        const citationsDiv = document.getElementById('citations');
+        const citationList = document.getElementById('citation-list');
+        const signLanguageInfo = document.getElementById('sign-language-info');
+
+        function handleLanguageChange() {
+            const selectedLanguage = selectElement.value;
+            if (selectedLanguage === SIGN_LANGUAGE_NAME) {
+                signLanguageInfo.classList.remove('hidden');
+                outputTextarea.classList.add('text-lg', 'font-medium', 'bg-green-50', 'text-gray-900');
+                outputTextarea.placeholder = "Sign language description will appear here...";
+            } else {
+                signLanguageInfo.classList.add('hidden');
+                outputTextarea.classList.remove('text-lg', 'font-medium', 'bg-green-50', 'text-gray-900');
+                outputTextarea.placeholder = "Translation will appear here...";
+            }
+        }
+        
+        handleLanguageChange();
+
+        function simplifyLanguageName(complexName) {
+            if (complexName.includes('(')) {
+                return complexName.split('(')[0].trim();
+            }
+            if (complexName.includes('-')) {
+                return complexName.split('-')[0].trim();
+            }
+            return complexName;
+        }
+
+        async function translateText() {
+            const userQuery = inputTextarea.value.trim();
+            const targetLanguage = selectElement.value;
+            const simplifiedLanguage = simplifyLanguageName(targetLanguage);
+            const isSignLanguage = targetLanguage === SIGN_LANGUAGE_NAME;
+
+            if (!userQuery) {
+                outputTextarea.value = "Please enter some text to translate.";
+                return;
+            }
+
+            translateButton.disabled = true;
+            buttonText.textContent = "Translating...";
+            spinner.classList.remove('hidden');
+            citationsDiv.classList.add('hidden');
+            outputTextarea.value = "";
+
+            let systemPrompt;
+            let fullQuery;
+
+            if (isSignLanguage) {
+                systemPrompt = `You are an expert in Pakistan Sign Language (PSL). Your sole task is to generate a detailed, step-by-step TEXTUAL guide describing the physical movements, handshapes, locations, and non-manual markers (facial expressions) required to sign the user's phrase in PSL. Present the guide as a **numbered list of steps or a clearly formatted guide**. Do not provide any translation, commentary, or introduction—only the signing guide.`;
+                fullQuery = `Generate the Pakistan Sign Language (PSL) signing guide for the phrase:\n\n"${userQuery}"`;
+            } else {
+                systemPrompt = `You are an expert multilingual translator specializing in the languages and dialects of Pakistan. Translate the user's text into the target language. If the target is a dialect, translate into that specific dialect or its closest linguistic equivalent. Do not provide extra commentary, just the translation.`;
+                fullQuery = `Translate the following text into ${simplifiedLanguage}:\n\n"${userQuery}"`;
+            }
+            
+            const apiKey = "AIzaSyB9ch7TX0Qx09TyY7vl9Kq0N7PpxMQ0FDI"; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const maxRetries = 5;
+
+            try {
+                for (let i = 0; i < maxRetries; i++) {
+                    const payload = {
+                        contents: [{ parts: [{ text: fullQuery }] }],
+                        tools: [{ "google_search": {} }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        const candidate = result.candidates?.[0];
+
+                        if (candidate && candidate.content?.parts?.[0]?.text) {
+                            const text = candidate.content.parts[0].text;
+                            outputTextarea.value = text;
+                            
+                            let sources = [];
+                            const groundingMetadata = candidate.groundingMetadata;
+                            if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                                sources = groundingMetadata.groundingAttributions
+                                    .map(attribution => ({
+                                        uri: attribution.web?.uri,
+                                        title: attribution.web?.title,
+                                    }))
+                                    .filter(source => source.uri && source.title);
+                            }
+
+                            citationList.innerHTML = '';
+                            if (sources.length > 0) {
+                                sources.forEach(source => {
+                                    const li = document.createElement('li');
+                                    li.innerHTML = `<a href="${source.uri}" target="_blank" class="text-[var(--accent-teal)] hover:text-teal-700 underline">${source.title}</a>`;
+                                    citationList.appendChild(li);
+                                });
+                                citationsDiv.classList.remove('hidden');
+                            }
+                            break;
+                        } else {
+                            console.error("API returned OK but content was missing or empty.");
+                            if (i < maxRetries - 1) {
+                                const delay = Math.pow(2, i) * 1000 + Math.random() * 500;
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                continue;
+                            } else {
+                                throw new Error("Translation content missing after all retries.");
+                            }
+                        }
+                    } else if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        throw new Error(`API request failed with status: ${response.status}`);
+                    }
+                }
+            } catch (error) {
+                console.error("Translation error:", error);
+                outputTextarea.value = `Error: Could not complete translation. Please try again. (${error.message})`;
+            } finally {
+                translateButton.disabled = false;
+                buttonText.textContent = "Translate";
+                spinner.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
